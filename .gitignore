@@ -1,0 +1,55 @@
+# Unity generated folders and files
+[Ll]ibrary/
+[Tt]emp/
+[Oo]bj/
+[Bb]uild/
+[Bb]uilds/
+[Ll]ogs/
+[Mm]emoryCaptures/
+UserSettings/
+
+# Asset meta data should only be tracked if working with Unity Cloud Build
+# Un-comment the following line if needed
+# [Aa]ssets/**/*.meta
+
+# Unity auto-generated files
+*.csproj
+*.unityproj
+*.sln
+*.suo
+*.tmp
+*.user
+*.userprefs
+*.pidb
+*.booproj
+*.svd
+*.pdb
+*.mdb
+*.opendb
+*.VC.db
+
+# Mono auto generated files
+*.pidb.meta
+*.pdb.meta
+
+# Unity3D Generated File On Crash Reports
+sysinfo.txt
+
+# Builds
+*.apk
+*.aab
+*.unitypackage
+
+# Crashlytics generated files
+fabric/
+
+# Visual Studio Code settings
+.vscode/
+
+# Rider project files
+.idea/
+*.sln.iml
+
+# OS generated files
+.DS_Store
+Thumbs.db
