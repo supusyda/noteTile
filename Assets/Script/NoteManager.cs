@@ -7,12 +7,23 @@ using UnityEngine;
 public class NoteManager : MonoBehaviour
 {
     // Start is called before the first frame update
-    [SerializeField] private float _timeToNextNote;
+    [SerializeField] private float _lengthOfCurrentSpawnNote;
     [SerializeField] private float _nextNoteTimer = 0;
     [SerializeField] private TextAsset textFile;
     [SerializeField] private List<float> timeIntervalNote = new List<float>();
     private float _pixelToUnitRatio = 0.01f;
+    private float normalNoteLengthMax = 0.24f;
+
     private int _currentIndexIntervalNote = 0;
+
+
+
+
+
+
+
+
+
     void Start()
     {
         textFile = Resources.Load("Text/interval") as TextAsset;
@@ -26,48 +37,32 @@ public class NoteManager : MonoBehaviour
 
 
 
-        _timeToNextNote = 0;
-        float oY = 0;
-        Transform firstNote = SpawnNoteWithOfSet(oY);
-        _timeToNextNote = timeIntervalNote[_currentIndexIntervalNote];
-        ScaleObjectToDistance(_timeToNextNote, firstNote);
+
+        float offSetY = 0;
+        _lengthOfCurrentSpawnNote = timeIntervalNote[_currentIndexIntervalNote];
+        Transform firstNote = SpawnNoteWithOffSet(offSetY);
+        ScaleObjectToDistance(_lengthOfCurrentSpawnNote, firstNote);
         timeIntervalNote.ForEach((eachNoteDistance) =>
         {
-            oY += _timeToNextNote;
-            Transform note = SpawnNoteWithOfSet(oY);
+            offSetY += _lengthOfCurrentSpawnNote;
             SetTimeToNextNote();
-            ScaleObjectToDistance(_timeToNextNote, note);
+            Transform note = SpawnNoteWithOffSet(offSetY);
+            ScaleObjectToDistance(_lengthOfCurrentSpawnNote, note);
 
         });
-
-
-
     }
 
-    private void Update()
+    private Transform SpawnNoteWithOffSet(float oY)
     {
 
-        // if (_timeToNextNote > _nextNoteTimer)
-        // {
-        //     _nextNoteTimer += Time.deltaTime;
-        // }
-        // else
-        // {
-        //     _nextNoteTimer = 0;
-        //     SpawnNote();
-
-        // }
-
-    }
-    private Transform SpawnNoteWithOfSet(float oY)
-    {
-
-        Transform randNote = NoteSpanwer.Instance.SpawnRandomOfSetY(oY * 10);
-        // randNote.GetComponent<Note>().SetLength(_timeToNextNote * 10, _timeToNextNote);
+        Transform randNote = NoteSpanwer.Instance.SpawnRandomOfSetY(oY * 10, IsHoldNote(_lengthOfCurrentSpawnNote));
         randNote.gameObject.SetActive(true);
         return randNote;
     }
-
+    private bool IsHoldNote(float noteLength)
+    {
+        return noteLength > this.normalNoteLengthMax;
+    }
 
     void ScaleObjectToDistance(float distant, Transform note)
     {
@@ -79,24 +74,23 @@ public class NoteManager : MonoBehaviour
         float targetLengthInUnits = 550 * _pixelToUnitRatio;
 
         // Scale object1's Y length based on the distance to object2
-        Vector3 newScale = note.localScale;
+        // Vector3 newScale = note.localScale;
 
         // Calculate the scale factor needed
-        newScale.y = yDistance / targetLengthInUnits;
+        float noteLengthScaleFactor = yDistance / targetLengthInUnits;
 
-        note.localScale = newScale;
+        note.GetComponent<Note>().SetLength(noteLengthScaleFactor);
+
     }
     private void SetTimeToNextNote()
     {
-        if (_currentIndexIntervalNote >= timeIntervalNote.Count - 1)
-        {
-            // _currentIndexIntervalNote = 0;
-            Debug.Log("DONE");
-            return;
-        }
-
-        _timeToNextNote = timeIntervalNote[++_currentIndexIntervalNote];
+        if (_currentIndexIntervalNote >= timeIntervalNote.Count - 1) return;
+        _lengthOfCurrentSpawnNote = timeIntervalNote[++_currentIndexIntervalNote];
     }
+    // private float GetNoteLength()
+    // {
+    //     return _currentIndexIntervalNote + 1;
+    // }
 
 
 }
