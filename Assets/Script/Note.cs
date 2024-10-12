@@ -15,6 +15,7 @@ public class Note : MonoBehaviour, IClick
 
   [SerializeField] protected bool isClick = false;
   [SerializeField] protected float noteSpeed;
+  protected static bool firstNotePlayed = false;
 
 
   public void SetLength(float length)
@@ -23,10 +24,24 @@ public class Note : MonoBehaviour, IClick
     this.transform.localScale = new Vector3(this.transform.localScale.x, length, 1);
   }
   // Update is called once per frame
+  protected virtual void Awake()
+  {
+
+  }
   private void OnEnable()
   {
     Init();
     EventDefine.onLose.AddListener(OnLose);
+    EventDefine.onStartGame.AddListener(OnStartGame);
+  }
+  private void OnDisable()
+  {
+    EventDefine.onLose.RemoveListener(OnLose);
+    EventDefine.onStartGame.RemoveListener(OnStartGame);
+  }
+  private void OnStartGame()
+  {
+    this.noteSpeed = 10;
   }
   protected virtual void Update()
   {
@@ -43,12 +58,18 @@ public class Note : MonoBehaviour, IClick
     EventDefine.onSuccessClickOnNote?.Invoke();
     Fade();
     isClick = true;
+
+
+    if (NoteManager.Instance.firstNotePlayed == true) return;
+    EventDefine.onStart?.Invoke();
+    NoteManager.Instance.firstNotePlayed = true;
+
   }
   public void Click()
   {
     OnClick();
   }
-  protected void Fade()
+  protected virtual void Fade()
   {
     model.color = new Color(model.color.r, model.color.g, model.color.b, .7f);
   }
@@ -57,5 +78,10 @@ public class Note : MonoBehaviour, IClick
     model.color = new Color(model.color.r, model.color.g, model.color.b, 1);
     isClick = false;
 
+
+  }
+  public bool GetIsClick()
+  {
+    return isClick;
   }
 }

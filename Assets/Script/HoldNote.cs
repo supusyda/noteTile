@@ -6,9 +6,17 @@ public class HoldNote : Note
 {
 
     [SerializeField] private Transform holdIndicator;
+    private SpriteRenderer _holdIndicatorSprite;
     public float count = 0;
     private bool _canBeHold = true;
     private float _maxHoldScaleY = 2.25f;
+    protected override void Awake()
+    {
+        base.Awake();
+        _holdIndicatorSprite = holdIndicator.GetComponent<SpriteRenderer>();
+
+
+    }
     override protected void Update()
     {
         base.Update();
@@ -23,12 +31,13 @@ public class HoldNote : Note
             Fade();
         }
     }
-    protected override void OnClick()
-    {
-        if (isClick) return;
-        EventDefine.onSuccessClickOnNote?.Invoke();
-        isClick = true;
-    }
+    // protected override void OnClick()
+    // {
+    //     if (isClick) return;
+    //     EventDefine.onSuccessClickOnNote?.Invoke();
+    //     isClick = true;
+
+    // }
     private bool IsHoldAble()
     {
         return isClick && Input.GetMouseButton(0) && _canBeHold == true;
@@ -54,5 +63,9 @@ public class HoldNote : Note
         }
         holdIndicator.localScale = new Vector3(holdIndicator.localScale.x, count, 0);
     }
-
+    protected override void Fade()
+    {
+        base.Fade();
+        _holdIndicatorSprite.color = new Color(_holdIndicatorSprite.color.r, _holdIndicatorSprite.color.g, _holdIndicatorSprite.color.b, .7f);
+    }
 }

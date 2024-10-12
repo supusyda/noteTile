@@ -9,6 +9,12 @@ public static class EventDefine
     public static UnityEvent onSuccessClickOnNote = new();
     public static UnityEvent<Transform> onMissClickOnNote = new();
     public static UnityEvent onLose = new();
+    public static UnityEvent onStart = new();
+    public static UnityEvent onStartGame = new();
+
+
+    public static UnityEvent<float> onReachProgression = new();
+
 
 
 }

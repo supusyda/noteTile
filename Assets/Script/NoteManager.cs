@@ -15,20 +15,22 @@ public class NoteManager : MonoBehaviour
     private float normalNoteLengthMax = 0.24f;
 
     private int _currentIndexIntervalNote = 0;
-
-
-
-
-
-
-
+    public bool firstNotePlayed = false;
+    public static NoteManager Instance;
+    private void Awake()
+    {
+        if (Instance != null) return;
+        Instance = this;
+    }
 
 
     void Start()
     {
+
+        firstNotePlayed = false;
+
         textFile = Resources.Load("Text/interval") as TextAsset;
         string[] abc = textFile.text.Split(",");
-
         foreach (string item in abc)
         {
             timeIntervalNote.Add(float.Parse(item, System.Globalization.CultureInfo.InvariantCulture));
@@ -50,6 +52,7 @@ public class NoteManager : MonoBehaviour
             ScaleObjectToDistance(_lengthOfCurrentSpawnNote, note);
 
         });
+        Debug.Log(offSetY);
     }
 
     private Transform SpawnNoteWithOffSet(float oY)

@@ -9,11 +9,11 @@ public class ProgressBar : MonoBehaviour
     // Start is called before the first frame update
     [SerializeField] private float _timeToDrain = 0.25f;
     private float _target;
-  [SerializeField]  private Image fillImage;
+    [SerializeField] private Image fillImage;
     private void OnEnable()
     {
 
-       
+
         EventDefine.onSuccessClickOnNote.AddListener(AddBar);
     }
     private void OnDisable()
@@ -32,7 +32,7 @@ public class ProgressBar : MonoBehaviour
         float newValue;
         while (elapedTime < _timeToDrain)
         {
-    
+
 
             elapedTime += Time.deltaTime;
             newValue = Mathf.Lerp(fillImage.fillAmount, _target, elapedTime / _timeToDrain);
@@ -40,6 +40,7 @@ public class ProgressBar : MonoBehaviour
 
             // fillImage.color = Color.Lerp(fillImage.color, new Color(fillImage.color.r, (fillImage.fillAmount / 1) - 0.1f, fillImage.color.b, 1), elapedTime / _timeToDrain);
 
+            EventDefine.onReachProgression.Invoke(fillImage.fillAmount);
             yield return null;
         }
     }

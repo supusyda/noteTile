@@ -33,6 +33,13 @@ public class NoteSpanwer : Spawn
     {
         var missNotePos = missClickNote.position;
         var missNoteLength = missClickNote.localScale.y;
+        var rand = Random.Range(0, _spawnLocations.Count);
+        while (missNotePos.x == _spawnLocations[rand].position.x)
+        {
+            rand = Random.Range(0, _spawnLocations.Count);
+        }
+
+        missNotePos = new Vector3(_spawnLocations[rand].position.x, missNotePos.y, 0);
         SpawnLoseNote(missNotePos, missNoteLength);
     }
 
