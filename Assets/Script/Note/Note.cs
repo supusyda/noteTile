@@ -11,8 +11,6 @@ public class Note : MonoBehaviour, IClick
   // [SerializeField] public float lengthNeed;
 
   [SerializeField] private SpriteRenderer model;
-
-
   [SerializeField] protected bool isClick = false;
   [SerializeField] protected float noteSpeed;
   protected static bool firstNotePlayed = false;
@@ -60,9 +58,9 @@ public class Note : MonoBehaviour, IClick
     isClick = true;
 
 
-    if (NoteManager.Instance.firstNotePlayed == true) return;
+    if (NoteManager.Instance.FirstNotePlayed == true) return;
     EventDefine.onStart?.Invoke();
-    NoteManager.Instance.firstNotePlayed = true;
+    NoteManager.Instance.FirstNotePlayed = true;
 
   }
   public void Click()
