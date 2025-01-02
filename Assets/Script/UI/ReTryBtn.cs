@@ -4,15 +4,12 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
-public class ReTryBtn : MonoBehaviour
+public class ReTryBtn : BtnBase
 {
     // Start is called before the first frame update
-    void OnEnable()
+    protected override void OnClick()
     {
-        GetComponent<Button>().onClick.AddListener(OnButtonClick);
-    }
-    void OnButtonClick()
-    {
-        SceneManager.LoadSceneAsync("Game");
+        base.OnClick();
+        TransistionScene.ChangeScene.Invoke("Game", "Circle");
     }
 }

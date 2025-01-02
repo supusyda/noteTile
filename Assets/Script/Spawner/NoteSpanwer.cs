@@ -64,12 +64,14 @@ public class NoteSpanwer : Spawn
         _prevSpawnIndex = rand;
         Vector3 randomPosSpawn = _spawnLocations[rand].position;
         Transform spawnObject = SpawnThing(randomPosSpawn, Quaternion.identity, isHoldNote == true ? _HOLDNOTE : _NOTE);
+
         return spawnObject;
     }
 
     public Transform SpawnRandomOfSetY(float OfSetY, bool isHoldNote)
     {
         Transform randNotePos = SpawnRandom(isHoldNote);
+
         randNotePos.position = new Vector3(randNotePos.position.x, randNotePos.position.y + OfSetY, 0);
         return randNotePos;
 

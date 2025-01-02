@@ -7,49 +7,66 @@ using UnityEngine;
 public class NoteManager : MonoBehaviour
 {
     // Start is called before the first frame update
+    [SerializeField] public DataTransferSence DataTransferSenceData;
     [SerializeField] private float _lengthOfCurrentSpawnNote;
-    [SerializeField] private float _nextNoteTimer = 0;
-    [SerializeField] private TextAsset textFile;
-    [SerializeField] private List<float> timeIntervalNote = new List<float>();
-    private float _pixelToUnitRatio = 0.01f;
-    private float _normalNoteLengthMax = 0.24f;
-
-    private int _currentIndexIntervalNote = 0;
-    public bool FirstNotePlayed = false;
     public static NoteManager Instance;
+    private List<float> _timeIntervalNote = new List<float>();
+
+    public bool FirstNotePlayed = false;
+    private readonly float _pixelToUnitRatio = 0.01f;
+    private readonly float _normalNoteLengthMax = 0.24f;
+    private int _currentIndexIntervalNote = 0;
     private void Awake()
     {
         if (Instance != null) return;
         Instance = this;
     }
-
+    void OnEnable()
+    {
+        EventDefine.onSuccessClickOnNote?.AddListener(CheckFirstNoteClick);
+    }
+    void OnDisable()
+    {
+        EventDefine.onSuccessClickOnNote?.RemoveListener(CheckFirstNoteClick);
+    }
+    private void CheckFirstNoteClick()
+    {
+        if (NoteManager.Instance.FirstNotePlayed == true) return;
+        EventDefine.onStart?.Invoke();
+        NoteManager.Instance.FirstNotePlayed = true;
+    }
 
     void Start()
     {
         FirstNotePlayed = false;
 
-        textFile = Resources.Load("Text/interval") as TextAsset; // load data.txt
-        string[] data = textFile.text.Split(","); // get data
+        TextAsset intevalFile = DataTransferSenceData.GetSelectedSong().IntervalTextFile; // load data.txt
+        string[] data = intevalFile.text.Split(","); // get data
         foreach (string item in data)
         {
-            timeIntervalNote.Add(float.Parse(item, System.Globalization.CultureInfo.InvariantCulture));//change string to float then add to timeIntervalNote
+            _timeIntervalNote.Add(float.Parse(item, System.Globalization.CultureInfo.InvariantCulture));//change string to float then add to timeIntervalNote
         }
         SpawnNoteArcordingToTextFile();
     }
     private void SpawnNoteArcordingToTextFile()
     {
         float offSetY = 0;//first note position
-        _lengthOfCurrentSpawnNote = timeIntervalNote[_currentIndexIntervalNote];//get first note length
+        _lengthOfCurrentSpawnNote = _timeIntervalNote[_currentIndexIntervalNote];//get first note length
         Transform firstNote = SpawnNoteWithOffSet(offSetY);//spawn first note at position 0
         ScaleObjectToDistance(_lengthOfCurrentSpawnNote, firstNote);//scale y = note length
-        timeIntervalNote.ForEach((eachNoteDistance) =>
+        for (int i = 1; i < _timeIntervalNote.Count; i++)
         {
             offSetY += _lengthOfCurrentSpawnNote;//update spawn position(offSetY) = offSetY + previous note length
             SetToNextNoteLength();// set _lengthOfCurrentSpawnNote to next note length
             Transform note = SpawnNoteWithOffSet(offSetY);//spawn note at update offSetY position
             ScaleObjectToDistance(_lengthOfCurrentSpawnNote, note);//scale y = note length
+            if (i == _timeIntervalNote.Count - 1)
+            {
+                note.GetComponent<Note>().SetLastNote(true);
+            }
 
-        });
+        }
+
     }
     private Transform SpawnNoteWithOffSet(float oY)
     {
@@ -85,13 +102,10 @@ public class NoteManager : MonoBehaviour
     }
     private void SetToNextNoteLength()
     {
-        if (_currentIndexIntervalNote >= timeIntervalNote.Count - 1) return;
-        _lengthOfCurrentSpawnNote = timeIntervalNote[++_currentIndexIntervalNote];
+        if (_currentIndexIntervalNote >= _timeIntervalNote.Count - 1) return;
+        _lengthOfCurrentSpawnNote = _timeIntervalNote[++_currentIndexIntervalNote];
     }
-    // private float GetNoteLength()
-    // {
-    //     return _currentIndexIntervalNote + 1;
-    // }
+
 
 
 }

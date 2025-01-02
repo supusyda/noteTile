@@ -1,4 +1,6 @@
-using System;
+
+
+
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -6,8 +8,11 @@ using UnityEngine;
 public class AudioManager : MonoBehaviour
 {
     // Start is called before the first frame update
-    [SerializeField] AudioSource musicAudio, sfxAudio;
-    [SerializeField] AudioClip[] musicClip, sfxClip;
+    [SerializeField] AudioSource musicAudio, sfxSource, BGMSource;
+    [SerializeField] AudioLibary sfxClip, BGM;
+    // [SerializeField] SongSO songSO;
+
+    [SerializeField] float musicFadeDurrationSec = 1;
     string _HYLT = "HYLT";
     string _Click = "Click";
     void OnEnable()
@@ -15,11 +20,12 @@ public class AudioManager : MonoBehaviour
         EventDefine.onLose.AddListener(StopPlay);
         EventDefine.onStart.AddListener(OnStart);
         EventDefine.onSuccessClickOnNote.AddListener(OnSuccessClick);
+
     }
 
     private void OnSuccessClick()
     {
-        PlaySFX("Cling");
+        PlaySFX(AudioClipName.SFX_Click);
     }
 
     private void OnDisable()
@@ -30,28 +36,61 @@ public class AudioManager : MonoBehaviour
     }
     void StopPlay()
     {
-        musicAudio.Stop();
+        BGMSource.Stop();
 
     }
     void OnStart()
     {
 
-        PlayMusic(_HYLT);
+        PlaySong(NoteManager.Instance.DataTransferSenceData.GetSelectedSong().SongAudio);
     }
-    void PlayMusic(string songName)
+    public void PlaySFX(string soundName)
     {
-        AudioClip audioClip = Array.Find(musicClip, x => x.name == songName);
-        if (audioClip == null) return;
-        musicAudio.clip = audioClip;
-        musicAudio.Play();
+        Debug.Log("Play SFX" + soundName);
+        sfxSource.pitch = Random.Range(.80f, 1.2f);
+        sfxSource.PlayOneShot(sfxClip.GetAudioClipsFromName(soundName));
     }
-    void PlaySFX(string vfxName)
+    public void PlayBGM(string musicName)
     {
-        AudioClip audioClip = Array.Find(sfxClip, x => x.name == vfxName);
-        if (audioClip == null) return;
-        sfxAudio.Stop();
-        sfxAudio.pitch = UnityEngine.Random.Range(1f, 3f);
-        sfxAudio.PlayOneShot(audioClip);
+        AudioClip audioClip = BGM.GetAudioClipsFromName(musicName);
+        BGMSource.loop = true;
+
+        StartCoroutine(CrossFadeMusic(BGMSource, audioClip));
+    }
+    public void PlaySong(AudioClip audioClip)
+    {
+
+        BGMSource.loop = false;
+        // StartCoroutine(CrossFadeMusic(BGMSource, audioClip));
+        BGMSource.clip = audioClip;
+        BGMSource.Play();
+    }
+
+    IEnumerator CrossFadeMusic(AudioSource audioSource, AudioClip audioClip)
+    {
+        float percent = 0;
+        while (percent < 1)
+        {
+            percent += Time.deltaTime * 1 / musicFadeDurrationSec;
+
+            BGMSource.volume = Mathf.Lerp(1f, 0, percent);
+            yield return null;
+
+        }
+
+        audioSource.clip = audioClip;
+        audioSource.Play();
+        percent = 0;
+        yield return null;
+
+        while (percent < 1)
+        {
+            percent += Time.deltaTime * 1 / musicFadeDurrationSec;
+
+            audioSource.volume = Mathf.Lerp(0, 1f, percent);
+            yield return null;
+
+        }
     }
 
 

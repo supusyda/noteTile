@@ -7,7 +7,7 @@ public class LineCheckGameOver : MonoBehaviour
     // Start is called before the first frame update
     void OnTriggerEnter2D(Collider2D other)
     {
-        if (other.transform.parent.TryGetComponent<Note>(out Note note) && note.GetIsClick() == false)
+        if (other.transform.parent.TryGetComponent<Note>(out Note note) && note.IsAlreadyInteract == false)
         {
 
             EventDefine.onLose.Invoke();

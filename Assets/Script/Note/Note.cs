@@ -11,14 +11,15 @@ public class Note : MonoBehaviour, IClick
   // [SerializeField] public float lengthNeed;
 
   [SerializeField] private SpriteRenderer model;
-  [SerializeField] protected bool isClick = false;
+  [SerializeField] protected bool isClicked = false;
   [SerializeField] protected float noteSpeed;
+  public bool IsAlreadyInteract { get; private set; }
+  protected bool isLastNote = false;
   protected static bool firstNotePlayed = false;
 
 
   public void SetLength(float length)
   {
-
     this.transform.localScale = new Vector3(this.transform.localScale.x, length, 1);
   }
   // Update is called once per frame
@@ -52,16 +53,14 @@ public class Note : MonoBehaviour, IClick
   }
   protected virtual void OnClick()
   {
-    if (isClick) return;
+    if (isClicked) return;
+
     EventDefine.onSuccessClickOnNote?.Invoke();
     Fade();
-    isClick = true;
-
-
-    if (NoteManager.Instance.FirstNotePlayed == true) return;
-    EventDefine.onStart?.Invoke();
-    NoteManager.Instance.FirstNotePlayed = true;
-
+    isClicked = true; // can't click again
+    IsAlreadyInteract = true;
+    if (!isLastNote) return;
+    EventDefine.OnDoneSong?.Invoke();
   }
   public void Click()
   {
@@ -74,12 +73,18 @@ public class Note : MonoBehaviour, IClick
   protected virtual void Init()
   {
     model.color = new Color(model.color.r, model.color.g, model.color.b, 1);
-    isClick = false;
+    isClicked = false;
+    IsAlreadyInteract = false;
 
 
   }
   public bool GetIsClick()
   {
-    return isClick;
+    return isClicked;
   }
+  public void SetLastNote(bool isLastNote)
+  {
+    this.isLastNote = isLastNote;
+  }
+      
 }

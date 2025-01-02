@@ -5,27 +5,18 @@ using UnityEngine;
 public class ClickManager : MonoBehaviour
 {
     // Start is called before the first frame update
-    [SerializeField] Camera camera;
+    [SerializeField] private Camera camera;
     [SerializeField] ContactFilter2D contactFilter;
-    private bool _isLose = false;
-    private bool _isStartGame = false;
 
-    void OnEnable()
-    {
-        EventDefine.onLose.AddListener(OnLose);
-        EventDefine.onStartGame.AddListener(() =>
-        {
-            _isStartGame = true;
-        });
-    }
-    private void OnLose()
-    {
-        _isLose = true;
-    }
+
+
+
 
     private void Update()
     {
-        if (_isLose) return;
+        if (GameManager.Instance.GetGameState() != GameState.Start && GameManager.Instance.GetGameState() != GameState.Tutorial) return;
+        // Debug.Log(GameManager.Instance.GetGameState());
+
         if (Input.GetMouseButtonDown(0))
         {
             DrawRayAtMouse();
@@ -34,21 +25,20 @@ public class ClickManager : MonoBehaviour
 
     void DrawRayAtMouse()
     {
-        List<RaycastHit2D> results = new();
+        List<RaycastHit2D> hitNote = new();
         Vector2 mousePos = camera.ScreenToWorldPoint(Input.mousePosition);
-        float distance = Mathf.Infinity;
-        Physics2D.Raycast(mousePos, Vector2.zero, contactFilter, results, distance);//fire ray cast at mouse
+        Physics2D.Raycast(mousePos, Vector2.zero, contactFilter, hitNote);//fire ray cast at mouse
 
-        if (results.Count <= 0 && _isStartGame == true) //game start but not hit any note
+        if (hitNote.Count <= 0 && GameManager.Instance.GetGameState() == GameState.Start) //game start but not hit any note at mouse click position
         {
-            FireRayMissNote(mousePos);
+            FireRayMissNote(mousePos); // check for the missing note
             return;
         }
-        else if (results.Count == 0 && _isStartGame == false) return; // game havent start yet
+        else if (hitNote.Count == 0 && GameManager.Instance.GetGameState() != GameState.Start) return; // game havent start yet
 
 
         //Game start and hit note
-        RaycastHit2D raycastHit2Dhit = results[0];
+        RaycastHit2D raycastHit2Dhit = hitNote[0];
         // if (raycastHit2Dhit == null) return;
 
         IClick clickAble = raycastHit2Dhit.collider.transform.parent.GetComponent<IClick>();

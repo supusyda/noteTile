@@ -8,12 +8,13 @@ public class HoldNote : Note
     [SerializeField] private Transform holdIndicator;
     private SpriteRenderer _holdIndicatorSprite;
     public float count = 0;
-    private bool _canBeHold = true;
+    // private bool _canBeHold = true;
     private float _maxHoldScaleY = 2.25f;
     protected override void Awake()
     {
         base.Awake();
         _holdIndicatorSprite = holdIndicator.GetComponent<SpriteRenderer>();
+        isClicked = false;
 
 
     }
@@ -25,27 +26,37 @@ public class HoldNote : Note
             count += Time.deltaTime * noteSpeed;
             OnHold();
         }
-        if (isClick && Input.GetMouseButtonUp(0))//mouse release
+        if (isClicked == true && Input.GetMouseButtonUp(0))//mouse release
         {
-            _canBeHold = false;
-            Fade();
+            // _canBeHold = false;\
+            isClicked = false;
+            // Fade();
         }
     }
-    // protected override void OnClick()
-    // {
-    //     if (isClick) return;
-    //     EventDefine.onSuccessClickOnNote?.Invoke();
-    //     isClick = true;
+    protected override void OnClick()
+    {
+        // if (isClicked) return;
 
-    // }
+        // EventDefine.onSuccessClickOnNote?.Invoke();
+        // // can't click again
+        // isClicked = true;
+
+        // if (!isLastNote) return;
+        // EventDefine.OnDoneSong?.Invoke();
+        base.OnClick();
+
+
+    }
     private bool IsHoldAble()
     {
-        return isClick && Input.GetMouseButton(0) && _canBeHold == true;
+        // return isClicked && Input.GetMouseButton(0) && _canBeHold == true;
+        return isClicked == true && Input.GetMouseButton(0);
+
     }
     protected override void Init()
     {
         base.Init();
-        _canBeHold = true;
+        // _canBeHold = true;
         ResetHoldIndicator();
 
     }
@@ -57,7 +68,7 @@ public class HoldNote : Note
     {
         if (count >= _maxHoldScaleY)
         {
-            _canBeHold = false;
+            // _canBeHold = false;
             Fade();
             return;
         }

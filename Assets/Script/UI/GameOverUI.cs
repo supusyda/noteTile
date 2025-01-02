@@ -9,10 +9,12 @@ public class GameOverUI : MonoBehaviour
     void OnEnable()
     {
         EventDefine.onLose.AddListener(ShowPanel);
+        EventDefine.OnDoneSong.AddListener(ShowPanel);
     }
     private void OnDisable()
     {
         EventDefine.onLose.RemoveListener(ShowPanel);
+        EventDefine.OnDoneSong.RemoveListener(ShowPanel);
     }
     void ShowPanel()
     {

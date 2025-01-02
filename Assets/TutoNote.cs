@@ -9,6 +9,7 @@ public class TutoNote : MonoBehaviour, IClick
     {
         EventDefine.onStartGame?.Invoke();
         transform.parent.gameObject.SetActive(false);
+        Debug.Log("CLICK");
 
     }
 }
