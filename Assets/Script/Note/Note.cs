@@ -16,6 +16,10 @@ public class Note : MonoBehaviour, IClick
   public bool IsAlreadyInteract { get; private set; }
   protected bool isLastNote = false;
   protected static bool firstNotePlayed = false;
+  private readonly float _pixelToUnitRatio = 0.01f;
+  private readonly float noteImgOriginalPixelLength = 550;
+  private static readonly float _normalNoteLengthMax = 0.24f;
+
 
 
   public void SetLength(float length)
@@ -86,5 +90,24 @@ public class Note : MonoBehaviour, IClick
   {
     this.isLastNote = isLastNote;
   }
-      
+  public void ScaleToDataLenght(float distant)
+  {
+    float yDistance = distant * 10;
+
+    // Convert 550 pixels to Unity units
+    float myTargetLengthInUnits = noteImgOriginalPixelLength * _pixelToUnitRatio;
+
+
+
+
+    // Calculate the scale factor needed
+    float noteLengthScaleFactor = yDistance / myTargetLengthInUnits;
+
+    this.transform.localScale = new Vector3(this.transform.localScale.x, noteLengthScaleFactor, 1);
+  }
+
+  public static bool IsHoldNote(float length)
+  {
+    return length > _normalNoteLengthMax;
+  }
 }
